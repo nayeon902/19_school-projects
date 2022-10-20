@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+{% extends "base.html" %} {% block title %}Maps{% endblock %} {% block content%}
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>매장별 인구밀집도 지도</title>
+<h1>Population density by store</h1>   
+<h6 id = "timeoutfunc"></h6>
+
+<script>
+   setTimeout(function() { 
+    document.getElementById("timeoutfunc").innerHTML= '현재위치:김해시 내외동 르하임스터디카페(35.237264524790085, 128.86690217723682)'
+
+}, 1000);
+
+</script> 
+<script>
+
+navigator.geolocation.watchPosition(function(pos){
+
+    var latitude = pos.coords.latitude;
+    var longitude = pos.coords.longitude;
+    latitude.toFixed(3);
+    longitude.toFixed(3);
+    document.getElementById("i_lat").innerHTML=latitude;
+    document.getElementById("i_lon").innerHTML=longitude;
+   
+})
+
+</script>
+
+
+</head>
+<!--<h1 style="background: linear-gradient(to top, #caf3f5 30%, transparent 30%)",>Population density by store</h1>-->
+
+<body>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&family=Play:wght@700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@800&display=swap');
+    h1{
+        text-align: center;
+        color: #191970;
+        font-family: 'Play', sans-serif;
+        font-size: 44px;
+    }
+    h2{
+        font-family: 'Nanum Gothic', sans-serif;
+        text-align: center;
+    }
+    ul.maplist li:before,
+    ol.maplist li:before {
+    content: ">";
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0px 5px 6px 0px;
+    }
+    ul.maplist li, ol.maplist li {
+   
+    list-style: none;
+    padding: 5px 0px 5px 5px;
+    font-size: 20px;
+    font-family: 'Nanum Gothic Coding', monospace;
+
+}
+h5{
+        text-align: center;
+        font-size: 14px;
+        font-family: 'Nanum Gothic Coding', monospace;
+        color: rgb(245, 85, 57);
+    }  
+</style>
+
+
+<div id="map" style="width:100%;height:600px;"></div>
+ 
+<p id="result"></p>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c5a1c4657897a1235708a0e079203d31&libraries=services"></script>
+</div>
+
+
+
+
+
+
+
+<script>
+var infowindow = new kakao.maps.InfoWindow({zIndex:1});
+
+
+var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    mapOption = { 
+        center: new kakao.maps.LatLng(35.237264524790085, 128.86690217723682), // 지도의 중심좌표
+        level: 2 // 지도의 확대 레벨
+    };
+
+var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+
+var ps = new kakao.maps.services.Places(map); 
+//카페, 음식점, 편의점
+ps.categorySearch('CS2', placesSearchCB, {useMapBounds:true});
+ps.categorySearch('FD6', placesSearchCB, {useMapBounds:true});
+ps.categorySearch('CE7', placesSearchCB, {useMapBounds:true});
+
+// 키워드 검색 완료 시 호출되는 콜백함수 입니다
+function placesSearchCB (data, status, pagination) {
+    if (status === kakao.maps.services.Status.OK) {
+        for (var i=0; i<data.length; i++) {
+            displayMarker(data[i]);    
+        }       
+    }
+}
+</script>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c5a1c4657897a1235708a0e079203d31"></script>
+
+<script>
+//
+var placename ='';
+// 지도에 마커를 표시하는 함수입니다
+function displayMarker(place) {
+    // 마커를 생성하고 지도에 표시합니다
+    var marker = new kakao.maps.Marker({
+        map: map,
+        position: new kakao.maps.LatLng(place.y, place.x) 
+    });
+
+    // 마커에 클릭이벤트를 등록합니다
+    kakao.maps.event.addListener(marker, 'mouseover', function() {
+        // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
+        infowindow.setContent('<div style="padding:5px;font-size:12px;">' + place.place_name + ' </div>');  
+       
+           
+        infowindow.open(map, marker);
+       
+    });
+    kakao.maps.event.addListener(marker, 'mouseout', function() {
+    // 마커에 마우스아웃 이벤트가 발생하면 인포윈도우를 제거합니다
+    infowindow.close();
+    });
+    kakao.maps.event.addListener(marker, 'click', function() {
+     setTimeout(function() { 
+            document.getElementById("timeoutfunc2").innerHTML= '매장안전도(20%) 매장내 인구수:2'}, 2000);
+    
+       document.getElementById("i_placename").innerHTML=place.place_name;
+       document.getElementById("placeway").innerHTML=place.place_name;
+
+       placename = place.place_name
+      
+     
+    // 마커에 마우스아웃 이벤트가 발생하면 인포윈도우를 제거합니다
+     //아이 플레이스 가진 엘리먼트에 모두 이 값 부여 
+    
+    });
+}
+
+
+// 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+var zoomControl = new kakao.maps.ZoomControl();
+map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+///
+var imageSrc = 'https://cdn.pixabay.com/photo/2014/04/03/10/03/google-309740_960_720.png', // 마커이미지의 주소입니다    
+    imageSize = new kakao.maps.Size(45, 65), // 마커이미지의 크기입니다
+    imageOption = {offset: new kakao.maps.Point(27, 69)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+      
+// 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
+var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption),
+    markerPosition = new kakao.maps.LatLng(35.237264524790085, 128.86690217723682); // 마커가 표시될 위치입니다
+
+// 마커를 생성합니다
+var marker1 = new kakao.maps.Marker({
+    position: markerPosition, 
+    image: markerImage, // 마커이미지 설정 
+    
+});
+    marker1.setMap(map);  
+
+</script>
+
+<script>
+    function givingValues(){
+       document.getElementById("placeway").innerHTML=placename;
+       var c=5;
+       var p=placename;
+       location.herf="checkmap.html?"+p+":"+c;
+    } 
+</script>
+<h5>*마커를 클릭하면 매장의 이름과 인구밀집도를 표시합니다*</h4> 
+
+
+<div class="row row-cols-1 row-cols-md-8 mb-4 text-center">
+    <div class="col">
+      <div class="card mb-8 shadow-sm">
+      <div class="card-header">
+       <form name="form_place"><span id="i_placename"></span></form>
+      </div>
+      <div class="card-body">
+        <h3 id="timeoutfunc2"></h3>
+      </div>
+    </div>
+  </div>
+  </div>
+
+
+<div>
+    <form action="corona.html" method="post">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script>
+            $(function Test(){
+                $("#testbutton").click(function(){
+                    document.getElementById("placeway").value=placename;
+                    var inputVal =$("#placeway").val();
+                    alert(inputVal+'여기에 방문하셨습니다!');
+                });
+
+
+
+            });
+        </script>
+        
+        
+    </form>
+    <style>
+   @import url('https://fonts.googleapis.com/css?family=Roboto+Condensed');
+
+.preserve-3d {
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    overflow-x: none;
+    background-color: #ffffff;
+    font-family: Roboto Condensed, sans-serif;
+    font-size: 12px;
+    font-smooth: always;
+    -webkit-font-smoothing: antialiased;
+}
+
+
+.button_base {
+    margin: 0;
+    border: 0;
+    font-size: 18px;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    margin-top: -25px;
+    margin-left: -100px;
+    width: 200px;
+    height: 50px;
+    text-align: center;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    /* -webkit-user-select: none;*/
+    cursor: default;
+}
+
+.button_base:hover {
+    cursor: pointer;
+}
+
+
+/* ### ### ### 02 */
+.b02_slide_in {
+    overflow: hidden;
+    border: #000000 solid 1px;
+}
+
+.b02_slide_in div {
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    height: 50px;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    padding: 10px;
+}
+
+.b02_slide_in div:nth-child(1) {
+    color: #000000;
+    background-color: #ffffff;
+}
+
+.b02_slide_in div:nth-child(2) {
+    background-color: #000000;
+    transition: top 0.1s ease;
+    -webkit-transition: top 0.1s ease;
+    -moz-transition: top 0.1s ease;
+    top: -50px;
+}
+
+.b02_slide_in div:nth-child(3) {
+    color: #ffffff;
+    transition: opacity 0.1s ease;
+    -webkit-transition: opacity 0.1s ease;
+    -moz-transition: opacity 0.1s ease;
+    opacity: 0;
+}
+
+.b02_slide_in:hover div:nth-child(2) {
+    top: 0px;
+    transition: top 0.1s ease;
+    -webkit-transition: top 0.1s ease;
+    -moz-transition: top 0.1s ease;
+}
+
+.b02_slide_in:hover div:nth-child(3) {
+    opacity: 1;
+    transition: opacity 0.1s ease;
+    -webkit-transition: opacity 0.1s ease;
+    -moz-transition: opacity 0.1s ease;
+}
+
+
+</style>
+<br>
+<div class="back" type="button" onclick="location.href='corona.html'">
+    <div class="button_base b02_slide_in">
+        <div>방문인증</div>
+        <div></div>
+        <div>방문인증</div>
+    </div>
+</div>
+<br>
+<br>
+
+
+</body> 
+</html>
+{% endblock %}

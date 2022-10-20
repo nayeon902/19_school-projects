@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>옷추천AI with mbti</title>
+</head>
+<body>
+   <h1>Teachable Machine Image Model[옷으로 mbti예측하기]</h1>
+<button type="button" onclick="init()">Start</button>
+<div id="webcam-container"></div>
+<div id="label-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+<script type="text/javascript">
+    // More API functions here:
+    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+
+    // the link to your model provided by Teachable Machine export panel
+    const URL = "./my_model/";
+
+    let model, webcam, labelContainer, maxPredictions;
+
+    // Load the image model and setup the webcam
+    async function init() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+
+        // load the model and metadata
+        // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+        // or files from your local hard drive
+        // Note: the pose library adds "tmImage" object to your window (window.tmImage)
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        // Convenience function to setup a webcam
+        const flip = true; // whether to flip the webcam
+        webcam = new tmImage.Webcam(300, 300, flip); // width, height, flip
+        await webcam.setup(); // request access to the webcam
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        // append elements to the DOM
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++) { // and class labels
+            labelContainer.appendChild(document.createElement("div"));
+        }
+    }
+
+    async function loop() {
+        webcam.update(); // update the webcam frame
+        await predict();
+        window.requestAnimationFrame(loop);
+    }
+
+    // run the webcam image through the image model
+    async function predict() {
+        // predict can take in an image, video or canvas html element
+        const prediction = await model.predict(webcam.canvas);
+        for (let i = 0; i < maxPredictions; i++) {
+            const classPrediction =
+                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+            labelContainer.childNodes[i].innerHTML = classPrediction;
+        }
+    }
+</script>
+<br>
+ <h3>결과분석하기</h3>
+ <h5>정확하지 않을 수 있으니 재미로만 봐주세요</h5>
+ <h4>*enfp: 캐주얼하면서 톡톡 튀는 트랜디한 옷, 힙한 옷 좋아함</h4>
+ <h4>*esfj: 몸매가 잘 드러나는 여성적인 옷</h4>
+ <h4>*esfp: 캐주얼하면서 편하거나 노출 있는 옷</h4>
+ <h4>*entj: 깔끔한 무채색 정장 느낌의 옷, 오피스룩</h4>
+ <h4>*estj: 갖춰입는 옷, 양복</h4>
+ <h4>*entp: 무난하면서도 자기 개성이 드러나는 옷</h4>
+ <h4>*enfj: 섬세한 개성이 묻어나는 세미 정장 스타일</h4>
+ <h4>*infp: 개성 강함, 나의 존재감 묻어나는 옷</h4>
+ <h4>*istp: 세련되고 깔끔한 스타일, 가죽자켓</h4>
+ <h4>*intp: 편한 옷, 츄리닝 좋아함</h4>
+ <h4>*infj: 깔끔 단정, intj보다 조금 더 캐주얼한 느낌</h4>
+ <h4>*intj: 무채색, 블랙러버</h4>
+ <h4>*isfp: 단정하고 무난하게 잘 입는데 자기만의 포인트 스타일 있음</h4>
+ <h4>*istj: 무난함, 가디건</h4>
+ <h4>*isfj: 평범하고 수수한옷, 코트 좋아함</h4>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Stylish&display=swap" rel="stylesheet">
+ <style>
+     h1{
+        font-family: 'Jua', sans-serif;
+     }
+     h3{
+         font-family: 'Stylish', sans-serif;
+         color:gray;
+     }
+     h4{
+        font-family: 'Stylish', sans-serif;
+        color:rgb(84, 157, 216);
+     }
+     h5{
+        font-family: 'Stylish', sans-serif;
+        color:rgb(179, 191, 201);
+     }
+ </style>
+</body>
+</html>

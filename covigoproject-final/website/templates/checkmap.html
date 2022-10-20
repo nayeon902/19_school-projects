@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+{% extends "base.html" %} {% block title %}Maps{% endblock %} {% block content%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <h1>Check my Way</h1>
+</head>
+<body>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&family=Play:wght@700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@800&display=swap');
+    h1{
+        text-align: center;
+        color: #191970;
+        font-family: 'Play', sans-serif;
+        font-size: 44px;
+    }
+    p{
+        font-family: 'Nanum Gothic', sans-serif;
+        text-align: center;
+    }
+    </style>
+    <p>오늘{{currenttime}}까지 이 장소들을 방문하셨습니다</p>
+    <script>
+        temp=location.href.split("?");
+        data=temp[1].split(":");
+        place=data[0];
+        c=data[1];
+        alert(1);
+    </script>
+    <span id="pl"></span>
+    <div id="map" style="width:100%;height:650px;"></div>    
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c5a1c4657897a1235708a0e079203d31"></script>
+<script>
+var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    mapOption = { 
+        center: new kakao.maps.LatLng(35.237264524790085, 128.86690217723682), // 지도의 중심좌표
+        level: 4 // 지도의 확대 레벨
+    };  
+
+var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+
+// 선을 구성하는 좌표 배열입니다. 이 좌표들을 이어서 선을 표시합니다
+var linePath = [
+    new kakao.maps.LatLng(35.240822782103706, 128.88061956863996),//김해여고
+    new kakao.maps.LatLng(35.239780, 128.880115),
+    new kakao.maps.LatLng(35.239587, 128.879525),
+    new kakao.maps.LatLng(35.238711, 128.880137),
+    new kakao.maps.LatLng(35.239223, 128.872305),
+    new kakao.maps.LatLng(35.239731, 128.868207),
+    new kakao.maps.LatLng(35.239354, 128.867681),
+    new kakao.maps.LatLng(35.237816, 128.867315 ),
+    new kakao.maps.LatLng(35.23730961417874, 128.86753152631152),//스타벅스
+    new kakao.maps.LatLng(35.23687765901455, 128.86741248957532),//아웃백
+    new kakao.maps.LatLng(35.23798807578792, 128.86766182816217),//편의점
+    new kakao.maps.LatLng(35.23744416587248, 128.86685389747566)//스터디카페
+];
+
+// 지도에 표시할 선을 생성합니다
+var polyline = new kakao.maps.Polyline({
+    path: linePath, // 선을 구성하는 좌표배열 입니다
+    strokeWeight: 9, // 선의 두께 입니다
+    strokeColor: '#4641D9', // 선의 색깔입니다
+    strokeOpacity: 0.9, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+    strokeStyle: 'solid' // 선의 스타일입니다
+});
+
+// 지도에 선을 표시합니다 
+polyline.setMap(map);  
+
+var markerPosition  = new kakao.maps.LatLng(35.240822782103706, 128.88061956863996); 
+
+// 마커를 생성합니다
+var marker = new kakao.maps.Marker({
+    position: markerPosition
+});
+
+// 마커가 지도 위에 표시되도록 설정합니다
+marker.setMap(map);
+
+var markerPosition  = new kakao.maps.LatLng(35.23744416587248, 128.86685389747566); 
+
+// 마커를 생성합니다
+var marker2 = new kakao.maps.Marker({
+    position: markerPosition
+});
+
+// 마커가 지도 위에 표시되도록 설정합니다
+marker2.setMap(map);
+
+
+var markerPosition  = new kakao.maps.LatLng(35.23730961417874, 128.86753152631152); 
+// 마커를 생성합니다
+var marker3 = new kakao.maps.Marker({
+    position: markerPosition
+});
+
+// 마커가 지도 위에 표시되도록 설정합니다
+marker3.setMap(map);
+
+
+var markerPosition  = new kakao.maps.LatLng(35.23687765901455, 128.86741248957532); 
+// 마커를 생성합니다
+var marker4 = new kakao.maps.Marker({
+    position: markerPosition
+});
+
+// 마커가 지도 위에 표시되도록 설정합니다
+marker4.setMap(map);
+
+var markerPosition  = new kakao.maps.LatLng(35.23798807578792, 128.86766182816217); 
+// 마커를 생성합니다
+var marker5 = new kakao.maps.Marker({
+    position: markerPosition
+});
+
+// 마커가 지도 위에 표시되도록 설정합니다
+marker5.setMap(map);
+
+kakao.maps.event.addListener(marker, 'click', function() {
+    alert("방문인증을 다시 하시겠습니까?") 
+    });
+kakao.maps.event.addListener(marker2, 'click', function() {
+    alert("방문인증을 다시 하시겠습니까?") 
+    });
+kakao.maps.event.addListener(marker3, 'click', function() {
+    alert("방문인증을 다시 하시겠습니까?") 
+    });
+kakao.maps.event.addListener(marker4, 'click', function() {
+    alert("방문인증을 다시 하시겠습니까?") 
+    });
+kakao.maps.event.addListener(marker5, 'click', function() {
+    alert("방문인증을 다시 하시겠습니까?") 
+    });
+
+</script>
+</body>
+</html>
+{% endblock %}
